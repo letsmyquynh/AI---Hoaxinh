@@ -1,58 +1,47 @@
-<<<<<<< HEAD
 from flask import Flask, request, jsonify
 import pickle
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Cho phép các trình duyệt gọi API từ domain khác
 
-model = pickle.load(open("model.pkl", "rb"))
+# ===== LOAD MODEL =====
+try:
+    model = pickle.load(open("model.pkl", "rb"))
+    vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+    print("Model & Vectorizer loaded successfully!")
+except Exception as e:
+    print(f"Error loading files: {e}")
 
+# ===== HOME =====
 @app.route("/")
 def home():
-    return "AI is running"
+    return "AI Sentiment Analysis Server is running!"
 
+# ===== API PREDICT =====
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        if not data or "comment" not in data:
+            return jsonify({"error": "Missing 'comment' field"}), 400
 
-    if not data or "comment" not in data:
-        return jsonify({"error": "No comment"}), 400
+        comment = data.get("comment")
+        
+        # Chuyển đổi văn bản thành vector
+        X = vectorizer.transform([comment])
+        
+        # Dự đoán
+        prediction = model.predict(X)[0]
 
-    text = data["comment"]
+        return jsonify({
+            "status": "success",
+            "comment": comment,
+            "prediction": str(prediction)
+        })
 
-    result = model.predict([text])[0]
-
-    return jsonify({
-        "result": str(result)
-    })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-=======
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import pickle
-
-app = Flask(__name__)
-CORS(app)
-
-model = pickle.load(open("model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
-
-@app.route("/")
-def home():
-    return "AI is running"
-
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.get_json()
-    comment = data["comment"]
-
-    vec = vectorizer.transform([comment])
-    result = model.predict(vec)[0]
-
-    return jsonify({"result": result})
-
-app.run(host="0.0.0.0", port=10000)
->>>>>>> 22f980f1ed9b18f8daedda3bee189e6df3240e60
+    app.run()
