@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -49,4 +50,57 @@
 </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test AI API</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; line-height: 1.6; }
+        .container { max-width: 500px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; }
+        #result { margin-top: 20px; font-weight: bold; color: blue; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Dự đoán Cảm xúc</h2>
+    <input type="text" id="commentInput" placeholder="Nhập bình luận tại đây...">
+    <button onclick="sendData()">Kiểm tra</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    async function sendData() {
+        const comment = document.getElementById("commentInput").value;
+        const resultDiv = document.getElementById("result");
+        
+        resultDiv.innerText = "Đang xử lý...";
+
+        try {
+            const response = await fetch("http://127.0.0.1:10000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ comment: comment })
+            });
+
+            const data = await response.json();
+            
+            if (data.prediction) {
+                resultDiv.innerHTML = `Kết quả: <span style="color:red">${data.prediction}</span>`;
+            } else {
+                resultDiv.innerText = "Lỗi: " + (data.message || "Không xác định");
+            }
+        } catch (error) {
+            resultDiv.innerText = "Lỗi kết nối Server! (Hãy chắc chắn Flask đang chạy)";
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+>>>>>>> 3f8e47d (first commit)
 </html>
