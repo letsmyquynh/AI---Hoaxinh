@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 flask
 flask-cors
 scikit-learn
+=======
+flask
+flask-cors
+scikit-learn
+>>>>>>> 22f980f1ed9b18f8daedda3bee189e6df3240e60
 pandas
